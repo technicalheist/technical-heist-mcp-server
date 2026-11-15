@@ -21,24 +21,9 @@ By design, this MCP server enforces strict boundaries regarding sensitive user d
 - **Included**: Authenticated user session management and **Encrypted Notes Vault** operations.
 - **Excluded by Policy**: **Passwords Vault**, **2FA/Authenticator Secrets**, and **Financial Accounts & Transactions** are deliberately excluded from this MCP server. AI agents are prohibited from accessing, viewing, or managing financial or credential vault data.
 
-## Installation from GitHub Packages
+## Running with MCP Clients (Zero Configuration)
 
-To install or run via `npx` from GitHub Packages, configure your npm registry for `@technicalheist`:
-
-```bash
-# In your ~/.npmrc:
-@technicalheist:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=YOUR_GITHUB_PAT
-```
-
-Run directly:
-```bash
-npx @technicalheist/technical-heist-mcp-server
-```
-
-## Running with MCP Clients
-
-Add the server to your MCP configuration (Claude Desktop, Cursor, Antigravity, etc.):
+Because the repository is public and pre-built, clients can run it directly from GitHub using `npx` with zero `.npmrc` changes and no auth tokens needed:
 
 ```json
 {
@@ -47,7 +32,7 @@ Add the server to your MCP configuration (Claude Desktop, Cursor, Antigravity, e
       "command": "npx",
       "args": [
         "-y",
-        "@technicalheist/technical-heist-mcp-server"
+        "github:technicalheist/technical-heist-mcp-server"
       ],
       "env": {
         "TECHNICALHEIST_AUTH_URL": "https://auth.technicalheist.com",
@@ -56,6 +41,12 @@ Add the server to your MCP configuration (Claude Desktop, Cursor, Antigravity, e
     }
   }
 }
+```
+
+Or execute directly from your terminal:
+
+```bash
+npx -y github:technicalheist/technical-heist-mcp-server
 ```
 
 ## Local Development & Build
