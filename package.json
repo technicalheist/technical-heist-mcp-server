@@ -1,0 +1,46 @@
+{
+  "name": "@technicalheist/technical-heist-mcp-server",
+  "version": "1.0.0",
+  "description": "Technical Heist MCP server for authentication and encrypted vault operations",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "bin": {
+    "technical-heist-mcp": "./dist/index.js",
+    "technical-heist-mcp-server": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/technicalheist/technical-heist-mcp-server.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "technicalheist",
+    "vault",
+    "notes"
+  ],
+  "author": "Technical Heist",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "typescript": "^5.7.3"
+  }
+}
