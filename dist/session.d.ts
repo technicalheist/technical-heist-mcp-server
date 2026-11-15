@@ -9,10 +9,13 @@ export interface UserProfile {
 export declare class SessionManager {
     private accessToken;
     private refreshToken;
+    private apiKey;
     private user;
     isAuthenticated(): boolean;
     getAccessToken(): string | null;
     getRefreshToken(): string | null;
+    getApiKey(): string | null;
+    setApiKey(apiKey: string): void;
     getUser(): UserProfile | null;
     saveTokens(accessToken: string, refreshToken?: string, user?: UserProfile): void;
     setUser(user: UserProfile): void;

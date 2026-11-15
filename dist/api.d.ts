@@ -8,6 +8,7 @@ export declare class ApiError extends Error {
     responseBody?: any | undefined;
     constructor(statusCode: number, message: string, responseBody?: any | undefined);
 }
+export declare function authenticateWithApiKey(apiKey: string): Promise<any>;
 export declare function requestRaw(baseUrl: string, path: string, method?: string, body?: any, options?: RequestOptions): Promise<any>;
 export declare const api: {
     get: (path: string, options?: RequestOptions) => Promise<any>;

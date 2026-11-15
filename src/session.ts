@@ -10,10 +10,11 @@ export interface UserProfile {
 export class SessionManager {
   private accessToken: string | null = process.env.TECHNICALHEIST_ACCESS_TOKEN || null;
   private refreshToken: string | null = process.env.TECHNICALHEIST_REFRESH_TOKEN || null;
+  private apiKey: string | null = process.env.TECHNICALHEIST_API_KEY || null;
   private user: UserProfile | null = null;
 
   public isAuthenticated(): boolean {
-    return !!this.accessToken;
+    return !!this.accessToken || !!this.apiKey;
   }
 
   public getAccessToken(): string | null {
@@ -22,6 +23,14 @@ export class SessionManager {
 
   public getRefreshToken(): string | null {
     return this.refreshToken;
+  }
+
+  public getApiKey(): string | null {
+    return this.apiKey;
+  }
+
+  public setApiKey(apiKey: string): void {
+    this.apiKey = apiKey;
   }
 
   public getUser(): UserProfile | null {
@@ -45,6 +54,7 @@ export class SessionManager {
   public clearSession(): void {
     this.accessToken = null;
     this.refreshToken = null;
+    this.apiKey = null;
     this.user = null;
   }
 }

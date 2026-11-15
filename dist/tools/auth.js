@@ -2,7 +2,7 @@ import { z } from 'zod';
 import http from 'http';
 import crypto from 'crypto';
 import { exec } from 'child_process';
-import { api, ApiError } from '../api.js';
+import { api, ApiError, authenticateWithApiKey } from '../api.js';
 import { session } from '../session.js';
 import { config } from '../config.js';
 function openBrowser(url) {
@@ -112,14 +112,30 @@ function performBrowserLogin() {
     });
 }
 export function registerAuthTools(server) {
-    // Login Tool with browser OAuth and credentials fallback
-    server.tool('login', 'Authenticate with Technical Heist. If credentials are omitted, opens your browser to sign in on auth.technicalheist.com and redirects the token automatically.', {
-        email: z.string().email().optional().describe('Optional account email. If omitted, opens interactive browser login.'),
-        password: z.string().optional().describe('Optional account password. If omitted, opens interactive browser login.'),
-    }, async ({ email, password }) => {
+    // Login Tool with API Key, Credentials, or Browser OAuth
+    server.tool('login', 'Authenticate with Technical Heist using an API key (headless), email & password, or interactive browser OAuth if omitted.', {
+        api_key: z.string().optional().describe('Technical Heist API Key (e.g. th_live_...) for headless authentication'),
+        email: z.string().email().optional().describe('Account email address'),
+        password: z.string().optional().describe('Account password'),
+    }, async ({ api_key, email, password }) => {
         try {
+            // Mode 1: API Key authentication
+            const keyToUse = api_key || session.getApiKey();
+            if (keyToUse) {
+                session.setApiKey(keyToUse);
+                const authRes = await authenticateWithApiKey(keyToUse);
+                const emailAddr = authRes?.user?.email || 'verified user';
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `Successfully authenticated via API Key as ${emailAddr}! Headless session is active and vault operations are unlocked.`,
+                        },
+                    ],
+                };
+            }
+            // Mode 2: Direct email & password API authentication
             if (email && password) {
-                // Direct API authentication
                 const response = await api.authPost('/api/auth/login', {
                     email: email.trim(),
                     password,
@@ -141,7 +157,7 @@ export function registerAuthTools(server) {
                     ],
                 };
             }
-            // Browser-based OAuth loopback flow
+            // Mode 3: Browser-based OAuth loopback flow
             const tokens = await performBrowserLogin();
             session.saveTokens(tokens.accessToken, tokens.refreshToken);
             // Fetch user profile
@@ -184,7 +200,7 @@ export function registerAuthTools(server) {
                     content: [
                         {
                             type: 'text',
-                            text: 'Not authenticated. Please call the "login" tool with your email and password, or run "login" to authenticate via browser.',
+                            text: 'Not authenticated. Please configure TECHNICALHEIST_API_KEY in your MCP environment or run the "login" tool.',
                         },
                     ],
                 };

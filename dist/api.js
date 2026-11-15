@@ -10,6 +10,28 @@ export class ApiError extends Error {
         this.name = 'ApiError';
     }
 }
+export async function authenticateWithApiKey(apiKey) {
+    const url = `${config.apiBaseUrl.replace(/\/+$/, '')}/api/auth/api-key`;
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey }),
+    });
+    const text = await response.text();
+    let json = null;
+    try {
+        json = JSON.parse(text);
+    }
+    catch {
+        json = text;
+    }
+    if (!response.ok) {
+        const msg = (json && (json.error || json.message)) || `API key authentication failed (${response.status})`;
+        throw new ApiError(response.status, msg, json);
+    }
+    session.saveTokens(json.accessToken, undefined, json.user);
+    return json;
+}
 export async function requestRaw(baseUrl, path, method = 'GET', body, options = {}) {
     const { authenticated = true, allowRetry = true, headers = {} } = options;
     const url = `${baseUrl.replace(/\/+$/, '')}${path.startsWith('/') ? '' : '/'}${path}`;
@@ -18,9 +40,19 @@ export async function requestRaw(baseUrl, path, method = 'GET', body, options = 
         ...headers,
     };
     if (authenticated) {
-        const token = session.getAccessToken();
+        let token = session.getAccessToken();
+        // Auto-authenticate with API key if access token is not present
+        if (!token && session.getApiKey()) {
+            try {
+                const authResult = await authenticateWithApiKey(session.getApiKey());
+                token = authResult.accessToken;
+            }
+            catch (err) {
+                console.error('[technical-heist-mcp-server] Failed to authenticate with TECHNICALHEIST_API_KEY:', err);
+            }
+        }
         if (!token) {
-            throw new ApiError(401, 'Not authenticated. Please invoke the "login" tool first with your email and password, or supply TECHNICALHEIST_ACCESS_TOKEN.');
+            throw new ApiError(401, 'Not authenticated. Please configure TECHNICALHEIST_API_KEY in your MCP environment or invoke the "login" tool.');
         }
         reqHeaders['Authorization'] = `Bearer ${token}`;
     }
@@ -44,6 +76,20 @@ export async function requestRaw(baseUrl, path, method = 'GET', body, options = 
     }
     // Handle automatic token refresh if token expired
     if (response.status === 401 && authenticated && allowRetry) {
+        // 1. Try API key re-exchange first if available
+        if (session.getApiKey()) {
+            try {
+                await authenticateWithApiKey(session.getApiKey());
+                return requestRaw(baseUrl, path, method, body, {
+                    ...options,
+                    allowRetry: false,
+                });
+            }
+            catch {
+                // Fall back to refresh token
+            }
+        }
+        // 2. Try refresh token
         const refreshed = await tryRefreshToken();
         if (refreshed) {
             return requestRaw(baseUrl, path, method, body, {
@@ -53,7 +99,7 @@ export async function requestRaw(baseUrl, path, method = 'GET', body, options = 
         }
         else {
             session.clearSession();
-            throw new ApiError(401, 'Session expired and refresh failed. Please re-authenticate using the "login" tool.');
+            throw new ApiError(401, 'Session expired and refresh failed. Please re-authenticate using the "login" tool or check your TECHNICALHEIST_API_KEY.');
         }
     }
     if (!response.ok) {
