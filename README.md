@@ -2,28 +2,28 @@
 
 [![Publish to GitHub Packages](https://github.com/technicalheist/technical-heist-mcp-server/actions/workflows/publish.yml/badge.svg)](https://github.com/technicalheist/technical-heist-mcp-server/actions/workflows/publish.yml)
 
-Model Context Protocol (MCP) server providing programmatic access to the **Technical Heist** platform and encrypted vault.
+Model Context Protocol (MCP) server providing programmatic access to the **Technical Heist** platform: encrypted notes, tasks/todos, 2FA authenticator (TOTP), and blog management.
 
 ## Features
 
-- **Authentication Management**: Authenticate using your email/password via the `login` tool, or provide a pre-existing token with `TECHNICALHEIST_ACCESS_TOKEN`.
-- **Automatic Token Refresh**: Automatically refreshes expired JWT tokens using the refresh token flow.
-- **Encrypted Notes Operations**: Full CRUD for vault notes with transparent server-side decryption and encryption:
-  - `list_notes`: List all decrypted notes with optional search or favorite filters.
-  - `get_note`: Fetch a single note by ID.
-  - `create_note`: Create a new encrypted note.
-  - `update_note`: Update title, body, or favorite state.
-  - `delete_note`: Delete a note.
+- **Authentication Management**:
+  - Headless **API Key** authentication via `TECHNICALHEIST_API_KEY` (0 popups, 0 prompts, sub-second startup).
+  - Interactive Browser OAuth loopback and direct email/password login tools.
+  - Automatic token generation and refresh.
+- **Encrypted Notes Vault**: Full CRUD for vault notes with transparent server-side decryption and encryption (`list_notes`, `get_note`, `create_note`, `update_note`, `delete_note`).
+- **Tasks & Todos**: Priority, status, and category-aware task management (`list_tasks`, `get_task`, `create_task`, `update_task`, `delete_task`).
+- **2FA Authenticator (TOTP)**: Secure 2FA token generation with live 6-digit codes and expiration countdowns (`list_authenticator_accounts`, `get_totp_code`, `create_authenticator_account`, `delete_authenticator_account`).
+- **Blog Content Management**: Author, draft, publish, update, and organize articles with categories and tags (`list_blog_articles`, `get_blog_article`, `create_blog_article`, `update_blog_article`, `delete_blog_article`, `list_blog_categories`, `list_blog_tags`).
 
 ## Security & Privacy Scope
 
 By design, this MCP server enforces strict boundaries regarding sensitive user data:
-- **Included**: Authenticated user session management and **Encrypted Notes Vault** operations.
-- **Excluded by Policy**: **Passwords Vault**, **2FA/Authenticator Secrets**, and **Financial Accounts & Transactions** are deliberately excluded from this MCP server. AI agents are prohibited from accessing, viewing, or managing financial or credential vault data.
+- **Included**: Authenticated user session management, **Encrypted Notes**, **Tasks/Todos**, **2FA Authenticator (TOTP)**, and **Blog Management**.
+- **Excluded by Policy**: **Passwords Vault** and **Financial Accounts & Transactions** are deliberately excluded. AI agents are strictly prohibited from accessing, viewing, or managing financial or master password data.
 
 ## Running with MCP Clients (Headless with API Key)
 
-Set `TECHNICALHEIST_API_KEY` in your MCP configuration for instant, headless authentication without browser popups or passwords:
+Add `TECHNICALHEIST_API_KEY` to your MCP configuration for instant, headless authentication:
 
 ```json
 {
@@ -64,11 +64,41 @@ Or using `npx`:
 }
 ```
 
-Or execute directly from your terminal:
+## Available Tools (24 Tools)
 
-```bash
-npx -y github:technicalheist/technical-heist-mcp-server
-```
+### Authentication
+- `login(api_key?, email?, password?)`: Authenticate and store access token.
+- `get_current_user()`: View active session details and user profile.
+- `logout()`: Invalidate active session.
+
+### Notes Vault
+- `list_notes(search?, favorites_only?)`: List decrypted notes with search and favorite filters.
+- `get_note(id)`: Retrieve specific note content.
+- `create_note(title, content)`: Add note to vault.
+- `update_note(id, title?, content?, is_favorite?)`: Edit existing note.
+- `delete_note(id)`: Remove note from vault.
+
+### Tasks (Todos)
+- `list_tasks(is_completed?, category?, priority?, search?)`: Query tasks with multi-dimensional filtering.
+- `get_task(id)`: Fetch single task by ID.
+- `create_task(title, priority?, category?, is_completed?)`: Add new task.
+- `update_task(id, title?, is_completed?, priority?, category?)`: Update status or metadata.
+- `delete_task(id)`: Permanently delete task.
+
+### Authenticator (2FA / TOTP)
+- `list_authenticator_accounts(search?, reveal_secrets?)`: List all 2FA accounts with live 6-digit codes and expiration countdowns.
+- `get_totp_code(id_or_service)`: Generate instant live 6-digit TOTP code for a service (e.g. "GitHub", "AWS").
+- `create_authenticator_account(service_name, account_name, secret)`: Add new 2FA Base32 secret.
+- `delete_authenticator_account(id)`: Remove 2FA secret from vault.
+
+### Blog Management
+- `list_blog_articles(status?, page?, limit?, search?)`: List articles by publication state (published, draft, all).
+- `get_blog_article(id)`: Retrieve full article markdown and metadata.
+- `create_blog_article(title, content, excerpt?, published?, cover_image?, category_id?, tag_ids?)`: Author a new article.
+- `update_blog_article(id, title?, content?, excerpt?, published?, cover_image?, category_id?, tag_ids?)`: Modify article content or status.
+- `delete_blog_article(id)`: Delete article.
+- `list_blog_categories()`: Discover categories for tagging articles.
+- `list_blog_tags()`: Discover tags for labeling articles.
 
 ## Local Development & Build
 
@@ -79,22 +109,6 @@ npm run build
 npm start
 ```
 
-## Configuration Options
+## License
 
-| Variable | Default | Description |
-| :--- | :--- | :--- |
-| `TECHNICALHEIST_AUTH_URL` | `https://auth.technicalheist.com` | Base URL for auth service |
-| `TECHNICALHEIST_API_URL` | `https://www.technicalheist.com` | Base URL for API & vault service |
-| `TECHNICALHEIST_ACCESS_TOKEN` | *(Optional)* | Pre-authenticated JWT access token |
-| `TECHNICALHEIST_REFRESH_TOKEN` | *(Optional)* | Refresh token |
-
-## Available Tools
-
-- `login(email, password)`: Authenticate and store the access token in memory.
-- `get_current_user()`: View active session details and user profile.
-- `logout()`: Invalidate the active session.
-- `list_notes(search?, favorites_only?)`: List notes.
-- `get_note(id)`: Retrieve specific note content.
-- `create_note(title, content)`: Add note to vault.
-- `update_note(id, title?, content?, is_favorite?)`: Edit existing note.
-- `delete_note(id)`: Remove note.
+MIT

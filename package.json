@@ -1,7 +1,7 @@
 {
   "name": "@technicalheist/technical-heist-mcp-server",
-  "version": "1.0.2",
-  "description": "Technical Heist MCP server for authentication and encrypted vault operations",
+  "version": "1.0.3",
+  "description": "Technical Heist MCP server for authentication, vault notes, 2FA authenticator, blog management, and tasks",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -31,12 +31,19 @@
     "model-context-protocol",
     "technicalheist",
     "vault",
-    "notes"
+    "notes",
+    "authenticator",
+    "totp",
+    "2fa",
+    "blog",
+    "tasks",
+    "todos"
   ],
   "author": "Technical Heist",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
+    "otpauth": "^9.6.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
