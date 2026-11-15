@@ -1,6 +1,6 @@
 {
   "name": "@technicalheist/technical-heist-mcp-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Technical Heist MCP server for authentication and encrypted vault operations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
