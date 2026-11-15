@@ -21,9 +21,29 @@ By design, this MCP server enforces strict boundaries regarding sensitive user d
 - **Included**: Authenticated user session management and **Encrypted Notes Vault** operations.
 - **Excluded by Policy**: **Passwords Vault**, **2FA/Authenticator Secrets**, and **Financial Accounts & Transactions** are deliberately excluded from this MCP server. AI agents are prohibited from accessing, viewing, or managing financial or credential vault data.
 
-## Running with MCP Clients (Zero Configuration)
+## Running with MCP Clients (Headless with API Key)
 
-Because the repository is public and pre-built, clients can run it directly from GitHub using `npx` with zero `.npmrc` changes and no auth tokens needed:
+Set `TECHNICALHEIST_API_KEY` in your MCP configuration for instant, headless authentication without browser popups or passwords:
+
+```json
+{
+  "mcpServers": {
+    "technical-heist": {
+      "command": "node",
+      "args": [
+        "/Users/nix/Documents/Projects/TechnicalHeist-App/technical-heist-mcp-server/dist/index.js"
+      ],
+      "env": {
+        "TECHNICALHEIST_AUTH_URL": "https://auth.technicalheist.com",
+        "TECHNICALHEIST_API_URL": "https://www.technicalheist.com",
+        "TECHNICALHEIST_API_KEY": "th_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+Or using `npx`:
 
 ```json
 {
@@ -36,7 +56,8 @@ Because the repository is public and pre-built, clients can run it directly from
       ],
       "env": {
         "TECHNICALHEIST_AUTH_URL": "https://auth.technicalheist.com",
-        "TECHNICALHEIST_API_URL": "https://www.technicalheist.com"
+        "TECHNICALHEIST_API_URL": "https://www.technicalheist.com",
+        "TECHNICALHEIST_API_KEY": "th_live_your_key_here"
       }
     }
   }
