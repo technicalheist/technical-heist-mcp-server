@@ -15,6 +15,12 @@ Model Context Protocol (MCP) server providing programmatic access to the **Techn
   - `update_note`: Update title, body, or favorite state.
   - `delete_note`: Delete a note.
 
+## Security & Privacy Scope
+
+By design, this MCP server enforces strict boundaries regarding sensitive user data:
+- **Included**: Authenticated user session management and **Encrypted Notes Vault** operations.
+- **Excluded by Policy**: **Passwords Vault**, **2FA/Authenticator Secrets**, and **Financial Accounts & Transactions** are deliberately excluded from this MCP server. AI agents are prohibited from accessing, viewing, or managing financial or credential vault data.
+
 ## Installation from GitHub Packages
 
 To install or run via `npx` from GitHub Packages, configure your npm registry for `@technicalheist`:
