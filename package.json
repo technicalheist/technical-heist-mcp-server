@@ -1,7 +1,7 @@
 {
   "name": "@technicalheist/technical-heist-mcp-server",
-  "version": "1.0.3",
-  "description": "Technical Heist MCP server for authentication, vault notes, 2FA authenticator, blog management, and tasks",
+  "version": "1.0.4",
+  "description": "Technical Heist MCP server for authentication, vault notes, 2FA authenticator, blog management with media uploads, tasks, and tenant-isolated docs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -37,7 +37,11 @@
     "2fa",
     "blog",
     "tasks",
-    "todos"
+    "todos",
+    "docs",
+    "documentation",
+    "media",
+    "uploads"
   ],
   "author": "Technical Heist",
   "license": "MIT",

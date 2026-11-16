@@ -14,6 +14,7 @@ export declare const api: {
     get: (path: string, options?: RequestOptions) => Promise<any>;
     post: (path: string, body?: any, options?: RequestOptions) => Promise<any>;
     put: (path: string, body?: any, options?: RequestOptions) => Promise<any>;
-    delete: (path: string, options?: RequestOptions) => Promise<any>;
+    patch: (path: string, body?: any, options?: RequestOptions) => Promise<any>;
+    delete: (path: string, body?: any, options?: RequestOptions) => Promise<any>;
     authPost: (path: string, body?: any, options?: RequestOptions) => Promise<any>;
 };

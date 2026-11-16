@@ -2,7 +2,7 @@
 
 [![Publish to GitHub Packages](https://github.com/technicalheist/technical-heist-mcp-server/actions/workflows/publish.yml/badge.svg)](https://github.com/technicalheist/technical-heist-mcp-server/actions/workflows/publish.yml)
 
-Model Context Protocol (MCP) server providing programmatic access to the **Technical Heist** platform: encrypted notes, tasks/todos, 2FA authenticator (TOTP), and blog management.
+Model Context Protocol (MCP) server providing programmatic access to the **Technical Heist** platform: encrypted notes, tasks/todos, 2FA authenticator (TOTP), blog management with media uploads, and tenant-isolated documentation.
 
 ## Features
 
@@ -10,16 +10,18 @@ Model Context Protocol (MCP) server providing programmatic access to the **Techn
   - Headless **API Key** authentication via `TECHNICALHEIST_API_KEY` (0 popups, 0 prompts, sub-second startup).
   - Interactive Browser OAuth loopback and direct email/password login tools.
   - Automatic token generation and refresh.
-- **Encrypted Notes Vault**: Full CRUD for vault notes with transparent server-side decryption and encryption (`list_notes`, `get_note`, `create_note`, `update_note`, `delete_note`).
+- **Tenant-Isolated Documentation (Docs)**: Full CRUD document tree and content management with strict user-level isolation (`list_docs`, `get_doc`, `create_doc`, `update_doc`, `rename_doc`, `delete_doc`). Documents are strictly scoped to the authenticated account's private storage path (`docs/<user_email>/`).
+- **Blog Content Management & Media Uploads**: Complete authoring suite (`list_blog_articles`, `get_blog_article`, `create_blog_article`, `update_blog_article`, `delete_blog_article`, `list_blog_categories`, `list_blog_tags`) combined with automated photo/document attachments (`upload_blog_media`, `list_blog_media`, `delete_blog_media`).
+- **Encrypted Notes Vault**: Transparent client-side notes operations with server-side AES-256 encryption (`list_notes`, `get_note`, `create_note`, `update_note`, `delete_note`).
 - **Tasks & Todos**: Priority, status, and category-aware task management (`list_tasks`, `get_task`, `create_task`, `update_task`, `delete_task`).
 - **2FA Authenticator (TOTP)**: Secure 2FA token generation with live 6-digit codes and expiration countdowns (`list_authenticator_accounts`, `get_totp_code`, `create_authenticator_account`, `delete_authenticator_account`).
-- **Blog Content Management**: Author, draft, publish, update, and organize articles with categories and tags (`list_blog_articles`, `get_blog_article`, `create_blog_article`, `update_blog_article`, `delete_blog_article`, `list_blog_categories`, `list_blog_tags`).
 
 ## Security & Privacy Scope
 
 By design, this MCP server enforces strict boundaries regarding sensitive user data:
-- **Included**: Authenticated user session management, **Encrypted Notes**, **Tasks/Todos**, **2FA Authenticator (TOTP)**, and **Blog Management**.
-- **Excluded by Policy**: **Passwords Vault** and **Financial Accounts & Transactions** are deliberately excluded. AI agents are strictly prohibited from accessing, viewing, or managing financial or master password data.
+- **Included**: Authenticated user session management, **Tenant-Isolated Documentation**, **Encrypted Notes**, **Tasks/Todos**, **2FA Authenticator (TOTP)**, and **Blog Management with Media Uploads**.
+- **Tenant Isolation Policy**: Documentation and media are strictly isolated per authenticated user identity. Cross-tenant folder or file traversal (`..`) is blocked.
+- **Excluded by Policy**: **Passwords Vault** and **Financial Accounts & Transactions** remain deliberately excluded from AI agent tools for user security.
 
 ## Running with MCP Clients (Headless with API Key)
 
@@ -64,12 +66,32 @@ Or using `npx`:
 }
 ```
 
-## Available Tools (24 Tools)
+## Available Tools (33 Tools)
 
 ### Authentication
 - `login(api_key?, email?, password?)`: Authenticate and store access token.
 - `get_current_user()`: View active session details and user profile.
 - `logout()`: Invalidate active session.
+
+### Documentation (Docs - Strict Tenant Isolation)
+- `list_docs(subfolder?)`: List document and directory hierarchy scoped strictly to authenticated user's workspace.
+- `get_doc(path, raw?)`: Read document text or Markdown content by relative path.
+- `create_doc(path, type?, content?)`: Create a new file or folder with optional initial content.
+- `update_doc(path, content)`: Overwrite or update document content.
+- `rename_doc(old_path, new_path)`: Move or rename a file or folder.
+- `delete_doc(path)`: Delete a document or entire directory tree.
+
+### Blog Management & Media
+- `list_blog_articles(status?, page?, limit?, search?)`: List articles by publication state (published, draft, all).
+- `get_blog_article(id)`: Retrieve full article markdown and metadata.
+- `create_blog_article(title, content, excerpt?, published?, cover_image?, category_id?, tag_ids?, media_ids?)`: Author a new article.
+- `update_blog_article(id, title?, content?, excerpt?, published?, cover_image?, category_id?, tag_ids?, media_ids?)`: Modify article content, status, or attached media.
+- `delete_blog_article(id)`: Delete article.
+- `upload_blog_media(file_path?, base64_data?, content?, filename?, content_type?, alt?)`: Upload images, diagrams, or documentation attachments (PDF, DOCX, TXT, JSON, MD, ZIP) to cloud storage, automatically generating ready-to-embed markdown snippets.
+- `list_blog_media()`: List all media assets and attachments in library.
+- `delete_blog_media(id)`: Permanently delete an uploaded media asset.
+- `list_blog_categories()`: Discover categories for tagging articles.
+- `list_blog_tags()`: Discover tags for labeling articles.
 
 ### Notes Vault
 - `list_notes(search?, favorites_only?)`: List decrypted notes with search and favorite filters.
@@ -90,15 +112,6 @@ Or using `npx`:
 - `get_totp_code(id_or_service)`: Generate instant live 6-digit TOTP code for a service (e.g. "GitHub", "AWS").
 - `create_authenticator_account(service_name, account_name, secret)`: Add new 2FA Base32 secret.
 - `delete_authenticator_account(id)`: Remove 2FA secret from vault.
-
-### Blog Management
-- `list_blog_articles(status?, page?, limit?, search?)`: List articles by publication state (published, draft, all).
-- `get_blog_article(id)`: Retrieve full article markdown and metadata.
-- `create_blog_article(title, content, excerpt?, published?, cover_image?, category_id?, tag_ids?)`: Author a new article.
-- `update_blog_article(id, title?, content?, excerpt?, published?, cover_image?, category_id?, tag_ids?)`: Modify article content or status.
-- `delete_blog_article(id)`: Delete article.
-- `list_blog_categories()`: Discover categories for tagging articles.
-- `list_blog_tags()`: Discover tags for labeling articles.
 
 ## Local Development & Build
 

@@ -6,10 +6,11 @@ import { registerNotesTools } from './tools/notes.js';
 import { registerTasksTools } from './tools/tasks.js';
 import { registerAuthenticatorTools } from './tools/authenticator.js';
 import { registerBlogTools } from './tools/blog.js';
+import { registerDocsTools } from './tools/docs.js';
 async function main() {
     const server = new McpServer({
         name: 'technical-heist',
-        version: '1.0.3',
+        version: '1.0.4',
     });
     // Register available tools
     registerAuthTools(server);
@@ -17,6 +18,7 @@ async function main() {
     registerTasksTools(server);
     registerAuthenticatorTools(server);
     registerBlogTools(server);
+    registerDocsTools(server);
     const transport = new StdioServerTransport();
     await server.connect(transport);
     console.error('[technical-heist-mcp-server] Server running on stdio');

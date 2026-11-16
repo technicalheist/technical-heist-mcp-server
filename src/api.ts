@@ -169,8 +169,10 @@ export const api = {
     requestRaw(config.apiBaseUrl, path, 'POST', body, options),
   put: (path: string, body?: any, options?: RequestOptions) =>
     requestRaw(config.apiBaseUrl, path, 'PUT', body, options),
-  delete: (path: string, options?: RequestOptions) =>
-    requestRaw(config.apiBaseUrl, path, 'DELETE', undefined, options),
+  patch: (path: string, body?: any, options?: RequestOptions) =>
+    requestRaw(config.apiBaseUrl, path, 'PATCH', body, options),
+  delete: (path: string, body?: any, options?: RequestOptions) =>
+    requestRaw(config.apiBaseUrl, path, 'DELETE', body, options),
   authPost: (path: string, body?: any, options?: RequestOptions) =>
     requestRaw(config.authBaseUrl, path, 'POST', body, { ...options, authenticated: false }),
 };
